@@ -27,7 +27,6 @@ data$bareNuclei <- as.integer(data$bareNuclei)
 data <- na.omit(data)
 
 features <- data[,2:11]
-
 features$class <- factor(features$class, levels=c(2,4), labels=c("benigna","cancerosa"))
 
 ######### Random Forest ###########
@@ -63,12 +62,36 @@ print(features.rf100)
 features.rf600 <- randomForest(class ~ ., data=features,ntree =600, importance=TRUE, proximity=TRUE)
 print(features.rf600)
 
-features.rf100 <- randomForest(class ~ ., data=features,ntree =100, mtry=3, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(class ~ ., data=features,ntree =100, mtry=2, importance=TRUE, proximity=TRUE)
+print(features.rf100)
 
+features.rf100 <- randomForest(class ~ ., data=features,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
 plot(features.rf600)
 
-parcoord(features[,1:9], var.label=TRUE,col=c("red","green")[as.numeric(features$class)])
+parcoord(features[,1:9], var.label=TRUE,col=c("green","red")[as.numeric(features$class)])
 legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
 
+
+
+###### PRUEBAS ######
+
+### Quitando variables mitoses
+
+features.mod1 <- features[,-9]
+
+features.rf100 <- randomForest(class ~ ., data=features.mod1, importance=TRUE, proximity=TRUE)
+print(features.rf100)
+
+features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, importance=TRUE, proximity=TRUE)
+print(features.rf100)
+
+features.rf600 <- randomForest(class ~ ., data=features.mod1,ntree =600, importance=TRUE, proximity=TRUE)
+print(features.rf600)
+
+features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, mtry=2, importance=TRUE, proximity=TRUE)
+print(features.rf100)
+
+features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
+print(features.rf100)
