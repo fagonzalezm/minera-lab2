@@ -28,8 +28,7 @@ data <- na.omit(data)
 
 features <- data[,2:11]
 
-features$class[features$class == 2] = 1
-features$class[features$class == 4] = 2
+features$class <- factor(features$class, levels=c(2,4), labels=c("benigna","cancerosa"))
 
 ######### Random Forest ###########
 
@@ -71,5 +70,5 @@ print(features.rf100)
 plot(features.rf600)
 
 parcoord(features[,1:9], var.label=TRUE,col=c("red","green")[as.numeric(features$class)])
-legend("bottomright",legend=c("benigna","cancerosa"),fill=2:4)
+legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
 
