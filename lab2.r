@@ -1,6 +1,7 @@
 require(randomForest)
 require(pROC)
 require(MASS)
+library(caret)
 
 names <- c("id", "clumpThickness", "uniformityOfCellSize", "uniformityOfCellShape",
            "marginalAdhesion", "singleEpithelialCellSize", "bareNuclei",
@@ -27,15 +28,18 @@ for (row in 1:data.n) {
 data$bareNuclei <- as.integer(data$bareNuclei)
 data <- na.omit(data)
 
-features <- data[,2:11]
+smp_size = floor(0.632*nrow(data))
+
+train_ind = sample(seq_len(nrow(data)),size = smp_size)
+
+features <- data[ , 2:11]
 features$class <- factor(features$class, levels=c(2,4), labels=c("benigna","cancerosa"))
 
-data_set_size <- floor(nrow(features)/2)
-# Generate a random sample of "data_set_size" indexes
-indexes <- sample(1:nrow(features), size = data_set_size)
-# Assign the data to the correct sets
-training <- features[indexes,]
-validation1 <- features[-indexes,]
+train.features <- features[train_ind,]
+test.features <- features[-train_ind,]
+
+
+
 
 ######### Random Forest ###########
 
@@ -154,46 +158,26 @@ features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, mtry=4,
 print(features.rf100)
 
 
-features.mod1 <- features[,-9]
+features.mod1 <- features[,-3]
+features.mod1 <- features.mod1[,-8]
 
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features.mod1, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(class ~ ., data=features.mod1, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 round(importance(features.rf100),2)
 varImpPlot(features.rf100)
 
 
+pred <- predict(features.rf100, test.features)
+table(test.features[,10], pred, dnn = c("benigna", "cancerosa"))
+
+probs <- predict(features.rf100, test.features, type = "prob")
 library(ROCR)
-
-indexes <- sample(1:nrow(features), size = data_set_size)
-
-prediction_for_table <- predict(features.rf100,validation1[,-9])
-table(observed=validation1[,9],predicted=prediction_for_table)
-
-prediction_for_roc_curve <- predict(features.rf100,validation1[,-9],type="prob")
-
-# Use pretty colours:
-pretty_colours <- c("#F8766D","#00BA38")
-# Specify the different classes 
-classes <- levels(validation1$class)
+pred2 <- prediction(probs[, 2], test.features[, 10])
+perf <- performance(pred2, "tpr", "fpr")
+plot(perf)
 
 
-for (i in 1:2)
-{
-  # Define which observations belong to class[i]
-  true_values <- ifelse(validation1[,9]==classes[i],1,0)
-  # Assess the performance of classifier for class[i]
-  pred <- prediction(prediction_for_roc_curve[,i],true_values)
-  perf <- performance(pred, "tpr", "fpr")
-  if (i==1)
-  {
-    plot(perf,main="ROC Curve",col=pretty_colours[i]) 
-  }
-  else
-  {
-    plot(perf,main="ROC Curve",col=pretty_colours[i],add=TRUE) 
-  }
-  # Calculate the AUC and print it to screen
-  auc.perf <- performance(pred, measure = "auc")
-  print(auc.perf@y.values)
-}
+pred3 <- prediction(features.rf100$votes[, 2], features[, 10])
+perf3 <- performance(pred3, "tpr", "fpr")
+plot(perf3)
