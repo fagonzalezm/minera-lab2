@@ -181,3 +181,40 @@ plot(perf)
 pred3 <- prediction(features.rf100$votes[, 2], features[, 10])
 perf3 <- performance(pred3, "tpr", "fpr")
 plot(perf3)
+
+### Quedando 4 variables ###
+
+
+featuresFinal <- features.mod2[, -5]
+
+set.seed(20)
+features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, mtry = 2, importance=TRUE, proximity=TRUE)
+print(features.final)
+round(importance(features.final),2)
+varImpPlot(features.final)
+
+### Quitando CellShape ###
+
+
+featuresFinal <- featuresFinal[, -3]
+
+set.seed(20)
+features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, importance=TRUE, proximity=TRUE)
+print(features.final)
+round(importance(features.final),2)
+varImpPlot(features.final)
+
+### Quitando ClumpThickness ###
+
+
+featuresFinal <- featuresFinal[, -3]
+
+set.seed(20)
+features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, importance=TRUE, proximity=TRUE)
+print(features.final)
+round(importance(features.final),2)
+varImpPlot(features.final)
+
+
+
+
