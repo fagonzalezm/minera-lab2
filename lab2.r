@@ -188,7 +188,7 @@ plot(perf3)
 featuresFinal <- features.mod2[, -5]
 
 set.seed(20)
-features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, mtry = 2, importance=TRUE, proximity=TRUE)
+features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.final)
 round(importance(features.final),2)
 varImpPlot(features.final)
@@ -199,10 +199,17 @@ varImpPlot(features.final)
 featuresFinal <- featuresFinal[, -3]
 
 set.seed(20)
-features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, importance=TRUE, proximity=TRUE)
+features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.final)
 round(importance(features.final),2)
 varImpPlot(features.final)
+
+parcoord(featuresFinal[,1:3], var.label=TRUE,col=c("green","red")[as.numeric(features$class)])
+legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
+
+pred4 <- prediction(features.final$votes[, 2], features[, 10])
+perf4 <- performance(pred4, "tpr", "fpr")
+plot(perf4)
 
 ### Quitando ClumpThickness ###
 
