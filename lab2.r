@@ -35,6 +35,12 @@ train_ind = sample(seq_len(nrow(data)),size = smp_size)
 features <- data[ , 2:11]
 features$class <- factor(features$class, levels=c(2,4), labels=c("benigna","cancerosa"))
 
+# Se balancean los datos utilizando un metodo de submuestreo down-sample
+table(features$class)
+features <- downSample(x = features[, -ncol(features)],
+                                y = features$class)
+table(features$Class)
+
 train.features <- features[train_ind,]
 test.features <- features[-train_ind,]
 
@@ -44,7 +50,7 @@ test.features <- features[-train_ind,]
 ######### Random Forest ###########
 
 set.seed(20)
-features.rf <- randomForest(class ~ ., data=features, importance=TRUE, proximity=TRUE)
+features.rf <- randomForest(Class ~ ., data=features, importance=TRUE, proximity=TRUE)
 
 print(features.rf)
 
@@ -62,32 +68,32 @@ features.mds <- cmdscale(1 - features.rf$proximity, eig=TRUE)
 
 op <- par(pty="s")
 pairs(cbind(features[1:9],features.mds$points),cex=0.5,gap=0,
-      col=c("red","green")[as.numeric(features$class)],
+      col=c("red","green")[as.numeric(features$Class)],
       main="Breastcancer Wisconsin: Predictos and MDS of Proximity Based on RandomForest")
 
 par(op)
 
 print(features.mds$GOF)
-MDSplot(features.rf,features$class)
+MDSplot(features.rf,features$Class)
 
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features,ntree =100, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features,ntree =100, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
 set.seed(20)
-features.rf200 <- randomForest(class ~ ., data=features,ntree =200, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf200 <- randomForest(Class ~ ., data=features,ntree =200, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf200)
 
 set.seed(20)
-features.rf600 <- randomForest(class ~ ., data=features,ntree =600, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf600 <- randomForest(Class ~ ., data=features,ntree =600, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf600)
 
-features.rf100 <- randomForest(class ~ ., data=features,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
 plot(features.rf600)
 
-parcoord(features[,1:9], var.label=TRUE,col=c("green","red")[as.numeric(features$class)])
+parcoord(features[,1:9], var.label=TRUE,col=c("green","red")[as.numeric(features$Class)])
 legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
 
 
@@ -99,21 +105,21 @@ legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
 features.mod1 <- features[,-9]
 
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features.mod1, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod1, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 round(importance(features.rf100),2)
 varImpPlot(features.rf100)
 
 set.seed(20)
-features.rf200.2 <- randomForest(class ~ ., data=features.mod1, ntree = 200, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf200.2 <- randomForest(Class ~ ., data=features.mod1, ntree = 200, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf200.2)
 
 set.seed(20)
-features.rf200.4 <- randomForest(class ~ ., data=features.mod1, ntree = 200, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf200.4 <- randomForest(Class ~ ., data=features.mod1, ntree = 200, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf200.4)
 
 set.seed(20)
-features.rf600 <- randomForest(class ~ ., data=features.mod1, ntree = 600, mtry = 2, importance=TRUE, proximity=TRUE)
+features.rf600 <- randomForest(Class ~ ., data=features.mod1, ntree = 600, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.rf600)
 round(importance(features.rf600),2)
 varImpPlot(features.rf600)
@@ -123,7 +129,7 @@ varImpPlot(features.rf600)
 features.mod2 <- features.mod1[,-4]
 
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features.mod2, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod2, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 round(importance(features.rf100),2)
 varImpPlot(features.rf100)
@@ -132,7 +138,7 @@ varImpPlot(features.rf100)
 features.mod2 <- features.mod2[,-7]
 features.mod2 <- features.mod2[,-4]
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features.mod2, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod2, ntree = 100, mtry = 4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
 
@@ -145,16 +151,16 @@ varImpPlot(features.rf100)
 
 
 
-features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod1,ntree =100, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
-features.rf600 <- randomForest(class ~ ., data=features.mod1,ntree =600, importance=TRUE, proximity=TRUE)
+features.rf600 <- randomForest(Class ~ ., data=features.mod1,ntree =600, importance=TRUE, proximity=TRUE)
 print(features.rf600)
 
-features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, mtry=2, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod1,ntree =100, mtry=2, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
-features.rf100 <- randomForest(class ~ ., data=features.mod1,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod1,ntree =100, mtry=4, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 
 
@@ -162,7 +168,7 @@ features.mod1 <- features[,-3]
 features.mod1 <- features.mod1[,-8]
 
 set.seed(20)
-features.rf100 <- randomForest(class ~ ., data=features.mod1, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
+features.rf100 <- randomForest(Class ~ ., data=features.mod1, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.rf100)
 round(importance(features.rf100),2)
 varImpPlot(features.rf100)
@@ -188,7 +194,7 @@ plot(perf3)
 featuresFinal <- features.mod2[, -5]
 
 set.seed(20)
-features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
+features.final <- randomForest(Class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.final)
 round(importance(features.final),2)
 varImpPlot(features.final)
@@ -199,12 +205,12 @@ varImpPlot(features.final)
 featuresFinal <- featuresFinal[, -3]
 
 set.seed(20)
-features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
+features.final <- randomForest(Class ~ ., data=featuresFinal, ntree = 200, mtry = 2, importance=TRUE, proximity=TRUE)
 print(features.final)
 round(importance(features.final),2)
 varImpPlot(features.final)
 
-parcoord(featuresFinal[,1:3], var.label=TRUE,col=c("green","red")[as.numeric(features$class)])
+parcoord(featuresFinal[,1:3], var.label=TRUE,col=c("green","red")[as.numeric(features$Class)])
 legend("bottomright",legend=c("cancerosa","benigna"),fill=2:4)
 
 pred4 <- prediction(features.final$votes[, 2], features[, 10])
@@ -217,7 +223,7 @@ plot(perf4)
 featuresFinal <- featuresFinal[, -3]
 
 set.seed(20)
-features.final <- randomForest(class ~ ., data=featuresFinal, ntree = 600, importance=TRUE, proximity=TRUE)
+features.final <- randomForest(Class ~ ., data=featuresFinal, ntree = 600, importance=TRUE, proximity=TRUE)
 print(features.final)
 round(importance(features.final),2)
 varImpPlot(features.final)
